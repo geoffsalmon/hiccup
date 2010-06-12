@@ -99,7 +99,22 @@
     (is (= (html [:br]) "<br />"))
     (is (= (html {:mode :xml} [:br]) "<br />"))
     (is (= (html {:mode :sgml} [:br]) "<br>"))
-    (is (= (html {:mode :html} [:br]) "<br>")))
+    (is (= (html {:mode :html} [:br]) "<br>"))
+    (is (not (.contains (html {:mode :sgml} [:html [:title] [:link] (list [:link])]) "/>")))
+    (is (not (.contains (let [title "title" body "body"]
+                          (html {:mode :sgml} '("DOCTYPE")
+                                [:html 
+                                 [:head
+                                  [:title title] "\n"
+                                  [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
+                                  [:link {:rel "shortcut icon" :href "/favicon.ico"}]
+                                  '([:link {:rel "/css/style.css" :href "/css/style.css"}])
+                                  ] "\n"
+                                 [:body body
+                                  [:div
+                                   [:img#diamond {:src "/imgs/diamond.png" :width 389 :height 388 :alt "Diamond"}]]
+                                  ]])) "/>")))
+    )
   (testing "boolean attributes"
     (is (= (html {:mode :xml} [:input {:type "checkbox" :checked true}])
            "<input checked=\"checked\" type=\"checkbox\" />"))
